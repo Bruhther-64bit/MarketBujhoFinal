@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../providers/auth_provider.dart';
+import 'auth_wrapper.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -78,7 +80,8 @@ class ProfileScreen extends StatelessWidget {
                           context: context,
                           builder: (context) => AlertDialog(
                             title: const Text('Sign Out'),
-                            content: const Text('Are you sure you want to sign out?'),
+                            content: const Text(
+                                'Are you sure you want to sign out?'),
                             actions: [
                               TextButton(
                                 onPressed: () => Navigator.pop(context, false),
@@ -94,6 +97,16 @@ class ProfileScreen extends StatelessWidget {
 
                         if (confirm == true) {
                           await authProvider.signOut();
+
+                          if (!context.mounted) return;
+
+                          // Replace entire navigation stack with AuthWrapper.
+                          Navigator.of(context).pushAndRemoveUntil(
+                            MaterialPageRoute(
+                              builder: (_) => const AuthWrapper(),
+                            ),
+                            (route) => false,
+                          );
                         }
                       },
                       icon: const Icon(Icons.logout),

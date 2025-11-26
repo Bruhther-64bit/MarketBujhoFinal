@@ -30,46 +30,87 @@ class OfferDetailsScreen extends StatelessWidget {
 
     try {
       final Uri uri = Uri.parse(url);
+
+      // Check if URL can be launched
       final bool canLaunch = await canLaunchUrl(uri);
 
+      print('✅ Can launch URL: $canLaunch');
+
       if (canLaunch) {
+        // Try external browser first
         final bool launched = await launchUrl(
           uri,
           mode: LaunchMode.externalApplication,
         );
-        if (!launched) {
-          _showCopyLinkDialog(context, url,
-              error: 'Could not open the offer link');
+
+        if (launched) {
+          print('✅ Offer URL launched successfully');
+        } else {
+          print('❌ Failed to launch offer URL (external app)');
+          _showErrorOrCopyDialog(
+            context,
+            'Could not open the offer link in external browser.',
+            url,
+          );
         }
       } else {
-        _showCopyLinkDialog(context, url,
-            error: 'Cannot open this offer link automatically');
+        print('❌ Cannot launch URL with canLaunchUrl, trying platformDefault');
+
+        // Fallback: let the platform decide how to open it
+        try {
+          final bool launched = await launchUrl(
+            uri,
+            mode: LaunchMode.platformDefault,
+          );
+          if (!launched) {
+            print('❌ Failed to launch offer URL (platformDefault)');
+            _showErrorOrCopyDialog(
+              context,
+              'Could not open the offer link.',
+              url,
+            );
+          }
+        } catch (e) {
+          print('❌ Alternative launch failed: $e');
+          _showErrorOrCopyDialog(
+            context,
+            'Error opening the offer link.',
+            url,
+          );
+        }
       }
     } catch (e) {
-      print('❌ Error launching offer URL: $e');
-      _showCopyLinkDialog(context, url,
-          error: 'Error opening the offer link');
+      print('❌ Error parsing or launching URL: $e');
+      _showErrorOrCopyDialog(
+        context,
+        'Error opening the offer link.',
+        url,
+      );
     }
   }
 
-  void _showCopyLinkDialog(BuildContext context, String url,
-      {String? error}) {
+  void _showErrorOrCopyDialog(
+    BuildContext context,
+    String message,
+    String url,
+  ) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Offer Link'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment:
+              CrossAxisAlignment.start,
           children: [
-            if (error != null) ...[
-              Text(
-                error,
-                style: const TextStyle(
-                    color: Colors.red, fontWeight: FontWeight.w500),
+            Text(
+              message,
+              style: const TextStyle(
+                color: Colors.red,
+                fontWeight: FontWeight.w500,
               ),
-              const SizedBox(height: 12),
-            ],
+            ),
+            const SizedBox(height: 12),
             const Text(
                 'You can copy the offer link below and open it in your browser:'),
             const SizedBox(height: 12),
@@ -122,7 +163,7 @@ class OfferDetailsScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.share),
             onPressed: () =>
-                _showCopyLinkDialog(context, offer.link),
+                _showErrorOrCopyDialog(context, 'Offer link', offer.link),
           ),
         ],
       ),
@@ -151,7 +192,7 @@ class OfferDetailsScreen extends StatelessWidget {
                   color: Colors.grey.shade200,
                   child: Image.network(
                     offer.thumbnail!,
-                    fit: BoxFit.cover, // still looks good as banner
+                    fit: BoxFit.cover,
                     errorBuilder: (_, __, ___) => Center(
                       child: Column(
                         mainAxisAlignment:
@@ -159,7 +200,8 @@ class OfferDetailsScreen extends StatelessWidget {
                         children: [
                           Icon(Icons.image,
                               size: 80,
-                              color: Colors.grey.shade400),
+                              color:
+                                  Colors.grey.shade400),
                           const SizedBox(height: 8),
                           Text(
                             'Offer image not available',

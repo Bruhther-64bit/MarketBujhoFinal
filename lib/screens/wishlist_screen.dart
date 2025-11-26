@@ -6,6 +6,7 @@ import '../providers/wishlist_provider.dart';
 import '../providers/notification_provider.dart';
 import '../widgets/product_card.dart';
 import '../models/product_model.dart';
+import '../services/local_notification_service.dart';
 import 'product_details_screen.dart';
 
 class WishlistScreen extends StatefulWidget {
@@ -16,7 +17,8 @@ class WishlistScreen extends StatefulWidget {
       _WishlistScreenState();
 }
 
-class _WishlistScreenState extends State<WishlistScreen> {
+class _WishlistScreenState
+    extends State<WishlistScreen> {
   // Category options (for grouping)
   static const List<String> _categoryOptions = [
     'All',
@@ -47,7 +49,8 @@ class _WishlistScreenState extends State<WishlistScreen> {
           controller: controller,
           maxLines: 3,
           decoration: const InputDecoration(
-            hintText: 'Add a note about this product (optional)',
+            hintText:
+                'Add a note about this product (optional)',
             border: OutlineInputBorder(),
           ),
         ),
@@ -59,10 +62,12 @@ class _WishlistScreenState extends State<WishlistScreen> {
           TextButton(
             onPressed: () async {
               final note = controller.text.trim();
-              await wishlistProvider.updateNote(userId, product, note);
+              await wishlistProvider.updateNote(
+                  userId, product, note);
               if (ctx.mounted) {
                 Navigator.pop(ctx);
-                ScaffoldMessenger.of(context).showSnackBar(
+                ScaffoldMessenger.of(context)
+                    .showSnackBar(
                   const SnackBar(
                     content: Text('Note updated'),
                     duration: Duration(seconds: 1),
@@ -127,8 +132,8 @@ class _WishlistScreenState extends State<WishlistScreen> {
                         SnackBar(
                           content: Text(
                               'Category set to ${cat == 'Uncategorized' ? 'None' : cat}'),
-                          duration:
-                              const Duration(seconds: 1),
+                          duration: const Duration(
+                              seconds: 1),
                         ),
                       );
                     }
@@ -145,8 +150,10 @@ class _WishlistScreenState extends State<WishlistScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final authProvider = context.watch<AuthProvider>();
-    final wishlistProvider = context.watch<WishlistProvider>();
+    final authProvider =
+        context.watch<AuthProvider>();
+    final wishlistProvider =
+        context.watch<WishlistProvider>();
     final notificationProvider =
         context.watch<NotificationProvider>();
     final user = authProvider.user;
@@ -157,11 +164,13 @@ class _WishlistScreenState extends State<WishlistScreen> {
     if (_selectedCategory != 'All') {
       if (_selectedCategory == 'Uncategorized') {
         filtered = allItems
-            .where((p) => p.category == null || p.category!.isEmpty)
+            .where((p) =>
+                p.category == null || p.category!.isEmpty)
             .toList();
       } else {
         filtered = allItems
-            .where((p) => p.category == _selectedCategory)
+            .where(
+                (p) => p.category == _selectedCategory)
             .toList();
       }
     }
@@ -180,8 +189,8 @@ class _WishlistScreenState extends State<WishlistScreen> {
               ScaffoldMessenger.of(context)
                   .showSnackBar(
                 const SnackBar(
-                  content:
-                      Text('Prices reset to original (demo).'),
+                  content: Text(
+                      'Prices reset to original (demo).'),
                   duration: Duration(seconds: 2),
                 ),
               );
@@ -197,8 +206,9 @@ class _WishlistScreenState extends State<WishlistScreen> {
               final count =
                   await wishlistProvider.simulatePriceDropForAll();
 
-              // Create notifications for each dropped item
-              for (final product in wishlistProvider.wishlist) {
+              // In-app notifications
+              for (final product
+                  in wishlistProvider.wishlist) {
                 final productId =
                     product.link.hashCode.toString();
                 final oldPrice =
@@ -208,7 +218,8 @@ class _WishlistScreenState extends State<WishlistScreen> {
                 if (oldPrice != null &&
                     newPrice != null &&
                     newPrice < oldPrice) {
-                  notificationProvider.addPriceDropNotification(
+                  notificationProvider
+                      .addPriceDropNotification(
                     product,
                     oldPrice,
                     newPrice,
@@ -216,16 +227,24 @@ class _WishlistScreenState extends State<WishlistScreen> {
                 }
               }
 
+              // Device-level (system) notification
+              await LocalNotificationService
+                  .showPriceDropSummary(
+                changedCount: count,
+              );
+
               if (!context.mounted) return;
 
-              ScaffoldMessenger.of(context).showSnackBar(
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(
                 SnackBar(
                   content: Text(
                     count == 0
                         ? 'No prices to update.'
                         : 'Price dropped on $count item${count == 1 ? '' : 's'} (demo).',
                   ),
-                  duration: const Duration(seconds: 2),
+                  duration:
+                      const Duration(seconds: 2),
                 ),
               );
             },
@@ -259,21 +278,26 @@ class _WishlistScreenState extends State<WishlistScreen> {
                 // Category chips row
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 12, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8),
                   child: Row(
-                    children: _categoryOptions.map((cat) {
+                    children:
+                        _categoryOptions.map((cat) {
                       final selected =
                           _selectedCategory == cat;
                       return Padding(
                         padding:
-                            const EdgeInsets.only(right: 8),
+                            const EdgeInsets.only(
+                                right: 8),
                         child: ChoiceChip(
                           label: Text(cat),
                           selected: selected,
                           onSelected: (_) {
                             setState(() {
-                              _selectedCategory = cat;
+                              _selectedCategory =
+                                  cat;
                             });
                           },
                         ),
@@ -287,15 +311,20 @@ class _WishlistScreenState extends State<WishlistScreen> {
                 Expanded(
                   child: ListView.builder(
                     itemCount: filtered.length,
-                    itemBuilder: (context, index) {
+                    itemBuilder:
+                        (context, index) {
                       final product = filtered[index];
                       final productId =
-                          product.link.hashCode.toString();
+                          product.link.hashCode
+                              .toString();
                       final oldPrice =
-                          wishlistProvider.getOldPrice(productId);
+                          wishlistProvider
+                              .getOldPrice(
+                                  productId);
 
                       final categoryLabel =
-                          product.category ?? 'Uncategorized';
+                          product.category ??
+                              'Uncategorized';
 
                       return Column(
                         children: [
@@ -314,8 +343,10 @@ class _WishlistScreenState extends State<WishlistScreen> {
                               );
                             },
                             onWishlistTap: () {
-                              if (user == null) return;
-                              wishlistProvider.toggleWishlist(
+                              if (user == null)
+                                return;
+                              wishlistProvider
+                                  .toggleWishlist(
                                 user.uid,
                                 product,
                               );
@@ -324,43 +355,59 @@ class _WishlistScreenState extends State<WishlistScreen> {
 
                           // PRICE DROP BANNER (demo)
                           if (oldPrice != null &&
-                              product.priceValue != null &&
-                              product.priceValue! < oldPrice)
+                              product.priceValue !=
+                                  null &&
+                              product.priceValue! <
+                                  oldPrice)
                             Padding(
                               padding:
-                                  const EdgeInsets.symmetric(
+                                  const EdgeInsets
+                                      .symmetric(
                                 horizontal: 24,
                                 vertical: 4,
                               ),
                               child: Container(
                                 padding:
-                                    const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: Colors.green.shade50,
+                                    const EdgeInsets
+                                        .all(8),
+                                decoration:
+                                    BoxDecoration(
+                                  color: Colors
+                                      .green.shade50,
                                   borderRadius:
-                                      BorderRadius.circular(8),
-                                  border: Border.all(
-                                    color:
-                                        Colors.green.shade300,
+                                      BorderRadius
+                                          .circular(
+                                              8),
+                                  border:
+                                      Border.all(
+                                    color: Colors
+                                        .green
+                                        .shade300,
                                   ),
                                 ),
                                 child: Row(
                                   children: [
                                     Icon(
-                                      Icons.arrow_downward,
-                                      color:
-                                          Colors.green.shade700,
+                                      Icons
+                                          .arrow_downward,
+                                      color: Colors
+                                          .green
+                                          .shade700,
                                       size: 18,
                                     ),
-                                    const SizedBox(width: 8),
+                                    const SizedBox(
+                                        width: 8),
                                     Expanded(
                                       child: Text(
                                         'Price dropped from ৳${oldPrice.toStringAsFixed(0)} to ${product.price ?? '৳${product.priceValue!.toStringAsFixed(0)}'}',
-                                        style: TextStyle(
+                                        style:
+                                            TextStyle(
                                           color: Colors
-                                              .green.shade800,
+                                              .green
+                                              .shade800,
                                           fontWeight:
-                                              FontWeight.bold,
+                                              FontWeight
+                                                  .bold,
                                           fontSize: 13,
                                         ),
                                       ),
@@ -373,36 +420,46 @@ class _WishlistScreenState extends State<WishlistScreen> {
                           // Category row
                           Padding(
                             padding:
-                                const EdgeInsets.symmetric(
+                                const EdgeInsets
+                                    .symmetric(
                               horizontal: 24,
                               vertical: 2,
                             ),
                             child: Row(
                               children: [
-                                const Icon(Icons.category,
+                                const Icon(
+                                    Icons.category,
                                     size: 18),
-                                const SizedBox(width: 8),
+                                const SizedBox(
+                                    width: 8),
                                 Expanded(
                                   child: Text(
                                     'Category: $categoryLabel',
                                     style: TextStyle(
                                       fontSize: 13,
                                       color: Colors
-                                          .grey.shade700,
+                                          .grey
+                                          .shade700,
                                     ),
                                   ),
                                 ),
                                 TextButton(
-                                  onPressed: user == null
-                                      ? null
-                                      : () => _editCategorySheet(
-                                            context,
-                                            userId: user.uid,
-                                            product: product,
-                                            wishlistProvider:
-                                                wishlistProvider,
-                                          ),
-                                  child: const Text('Change'),
+                                  onPressed:
+                                      user == null
+                                          ? null
+                                          : () =>
+                                              _editCategorySheet(
+                                                context,
+                                                userId: user
+                                                    .uid,
+                                                product:
+                                                    product,
+                                                wishlistProvider:
+                                                    wishlistProvider,
+                                              ),
+                                  child:
+                                      const Text(
+                                          'Change'),
                                 ),
                               ],
                             ),
@@ -411,57 +468,76 @@ class _WishlistScreenState extends State<WishlistScreen> {
                           // Note section
                           Padding(
                             padding:
-                                const EdgeInsets.symmetric(
+                                const EdgeInsets
+                                    .symmetric(
                               horizontal: 24,
                               vertical: 4,
                             ),
                             child: Row(
                               crossAxisAlignment:
-                                  CrossAxisAlignment.center,
+                                  CrossAxisAlignment
+                                      .center,
                               children: [
-                                const Icon(Icons.note,
+                                const Icon(
+                                    Icons.note,
                                     size: 18),
-                                const SizedBox(width: 8),
+                                const SizedBox(
+                                    width: 8),
                                 Expanded(
                                   child: Text(
-                                    (product.note == null ||
+                                    (product.note ==
+                                                null ||
                                             product.note!
                                                 .isEmpty)
                                         ? 'Add a note...'
-                                        : product.note!,
+                                        : product
+                                            .note!,
                                     maxLines: 2,
                                     overflow:
-                                        TextOverflow.ellipsis,
+                                        TextOverflow
+                                            .ellipsis,
                                     style: TextStyle(
                                       fontSize: 13,
-                                      fontStyle: (product.note ==
+                                      fontStyle: (product
+                                                      .note ==
                                                   null ||
                                               product.note!
                                                   .isEmpty)
-                                          ? FontStyle.italic
-                                          : FontStyle.normal,
-                                      color: (product.note ==
+                                          ? FontStyle
+                                              .italic
+                                          : FontStyle
+                                              .normal,
+                                      color: (product
+                                                      .note ==
                                                   null ||
                                               product.note!
                                                   .isEmpty)
                                           ? Colors
-                                              .grey.shade600
+                                              .grey
+                                              .shade600
                                           : Colors
-                                              .grey.shade800,
+                                              .grey
+                                              .shade800,
                                     ),
                                   ),
                                 ),
                                 TextButton(
-                                  onPressed: user == null
-                                      ? null
-                                      : () => _editNoteDialog(
-                                            context,
-                                            userId: user.uid,
-                                            product: product,
-                                            wishlistProvider:
-                                                wishlistProvider,
-                                          ),
-                                  child: const Text('Edit'),
+                                  onPressed:
+                                      user == null
+                                          ? null
+                                          : () =>
+                                              _editNoteDialog(
+                                                context,
+                                                userId: user
+                                                    .uid,
+                                                product:
+                                                    product,
+                                                wishlistProvider:
+                                                    wishlistProvider,
+                                              ),
+                                  child:
+                                      const Text(
+                                          'Edit'),
                                 ),
                               ],
                             ),
