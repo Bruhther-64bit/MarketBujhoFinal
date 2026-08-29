@@ -89,17 +89,33 @@ The e-commerce landscape in Bangladesh is expanding rapidly, yet consumers strug
 
 ## Screenshots
 
-### Authentication & Login
+### Authentication System
 
-| ![Register Screen](images/01_register_screen.png) | ![Login Screen](images/02_login_screen.png) |
+| ![Register Screen](images/02_register_screen.png) | ![Login Screen](images/03_login_screen.png) |
 |:---:|:---:|
-| **Register Screen** - Create new account with email/password | **Login Screen** - Sign in with email or Google |
+| **Figure 1:** Register Screen - Create new account with email and password | **Figure 2:** Login Screen - Sign in with email/password or Google |
 
 ### Dashboard & Search
 
-| ![Main Dashboard](images/03_dashboard_screen.png) | ![Search Results](images/04_search_results_screen.png) |
+| ![Main Dashboard](images/04_main_dashboard.png) | ![Product Search with Sorting](images/05_product_search_sorting.png) |
 |:---:|:---:|
-| **Dashboard** - Main screen with search bar and recently viewed products | **Search Results** - Product listing with filtering and sorting options for "realme buds air 7" |
+| **Figure 3:** Main Dashboard - Search bar, quick categories, and recently viewed products | **Figure 4:** Product Search - Sorting options by relevance and price |
+
+| ![Product Search with Filters](images/06_product_search_filters.png) |
+|:---:|
+| **Figure 5:** Product Search - Filter results and compare prices across multiple retailers |
+
+### Product & Wishlist Management
+
+| ![Product Details Screen](images/07_product_details.png) | ![Wishlist Management](images/08_wishlist.png) |
+|:---:|:---:|
+| **Figure 6:** Product Details - View full product info, price, and source retailer | **Figure 7:** Wishlist - Organize products by categories with custom notes |
+
+### Trending Offers & AI Assistant
+
+| ![Trending Offers](images/09_trending_offers.png) | ![AI Shopping Assistant](images/10_ai_assistant.png) |
+|:---:|:---:|
+| **Figure 8:** Trending Offers - Aggregated deals from major BD retailers | **Figure 9:** AI Shopping Assistant - Chat-based personalized recommendations |
 
 ---
 
