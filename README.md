@@ -13,6 +13,7 @@ Faculty of Science & Technology | Department of Computer Science & Engineering (
 
 - [Overview](#overview)
 - [Features](#features)
+- [Screenshots](#screenshots)
 - [Technology Stack](#technology-stack)
 - [Architecture](#architecture)
 - [Getting Started](#getting-started)
@@ -83,6 +84,22 @@ The e-commerce landscape in Bangladesh is expanding rapidly, yet consumers strug
 - Local notification system
 - Price drop alerts
 - Wishlist updates
+
+---
+
+## Screenshots
+
+### Authentication & Login
+
+| ![Register Screen](images/01_register_screen.png) | ![Login Screen](images/02_login_screen.png) |
+|:---:|:---:|
+| **Register Screen** - Create new account with email/password | **Login Screen** - Sign in with email or Google |
+
+### Dashboard & Search
+
+| ![Main Dashboard](images/03_dashboard_screen.png) | ![Search Results](images/04_search_results_screen.png) |
+|:---:|:---:|
+| **Dashboard** - Main screen with search bar and recently viewed products | **Search Results** - Product listing with filtering and sorting options for "realme buds air 7" |
 
 ---
 
